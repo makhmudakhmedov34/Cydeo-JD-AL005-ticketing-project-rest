@@ -38,19 +38,30 @@ public class ProjectController {
         return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseWrapper("Project is successfully created",HttpStatus.CREATED));
     }
 
-    public ResponseEntity<ResponseWrapper> updateProject(){
-
+    @PutMapping
+    public ResponseEntity<ResponseWrapper> updateProject(@RequestBody ProjectDTO project){
+        projectService.update(project);
+        return ResponseEntity.ok(new ResponseWrapper("Project is successfully updated",project,HttpStatus.OK));
     }
 
-    public ResponseEntity<ResponseWrapper> deleteProject(){
-
+    @DeleteMapping("/{projectCode}")
+    public ResponseEntity<ResponseWrapper> deleteProject(@PathVariable("projectCode") String code){
+        projectService.delete(code);
+        return ResponseEntity.ok(new ResponseWrapper("Project is successfully deleted",HttpStatus.OK));
     }
 
+    @GetMapping("/manager/project-status")
     public ResponseEntity<ResponseWrapper> getProjectByManager(){
+        List<ProjectDTO> projects = projectService.listAllProjectDetails();
+        return ResponseEntity.ok(new ResponseWrapper("Projects are successfully retrieved",projects, HttpStatus.OK));
 
     }
 
-    public ResponseEntity<ResponseWrapper> managerCompleteProject(){
+
+    @PutMapping("/manager/complete/{projectCode}")
+    public ResponseEntity<ResponseWrapper> managerCompleteProject(@PathVariable("projectCode") String code){
+        projectService.complete(code);
+        return ResponseEntity.ok(new ResponseWrapper(("Project is successfully completed",HttpStatus.OK)));
 
     }
 }
