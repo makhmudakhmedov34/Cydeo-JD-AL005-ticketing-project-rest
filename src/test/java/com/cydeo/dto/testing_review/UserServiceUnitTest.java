@@ -128,11 +128,11 @@ public class UserServiceUnitTest {
 
     @Test
     void should_save_user(){
-
+        //stub
         when(passwordEncoder.encode(anyString())).thenReturn("anypassword");
         when(userRepository.save(any())).thenReturn(user);
         UserDTO actualDTO = userService.save(userDTO);
-
+        //verify
         verify(keycloakService).userCreate(any());
 
         assertThat(actualDTO).usingRecursiveComparison().isEqualTo(userDTO);
