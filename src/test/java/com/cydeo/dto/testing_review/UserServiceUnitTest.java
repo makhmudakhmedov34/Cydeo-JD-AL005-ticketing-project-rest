@@ -21,13 +21,14 @@ import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceUnitTest {
@@ -114,6 +115,27 @@ public class UserServiceUnitTest {
         UserDTO expectedUserDTO = userDTO;
 
         assertThat(actualUserDTO).usingRecursiveComparison().isEqualTo(expectedUserDTO);
+    }
+
+    @Test
+    void should_throw_exception_when_user_not_found(){
+        when(userRepository.findByUserNameAndIsDeleted(anyString(),anyBoolean())).thenReturn(null);
+
+        Throwable throwable = catchThrowable(() -> userService.findByUserName("userName"));
+        assertInstanceOf(NoSuchElementException.class,throwable);
+        assertEquals("User not found",throwable.getMessage());
+    }
+
+    @Test
+    void should_save_user(){
+
+        when(passwordEncoder.encode(anyString())).thenReturn("anypassword");
+        when(userRepository.save(any())).thenReturn(user);
+        UserDTO actualDTO = userService.save(userDTO);
+
+        verify(keycloakService).userCreate(any());
+
+        assertThat(actualDTO).usingRecursiveComparison().isEqualTo(userDTO);
 
     }
 
