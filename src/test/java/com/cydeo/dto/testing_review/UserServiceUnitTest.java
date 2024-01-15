@@ -125,18 +125,15 @@ public class UserServiceUnitTest {
         assertInstanceOf(NoSuchElementException.class,throwable);
         assertEquals("User not found",throwable.getMessage());
     }
-
     @Test
     void should_save_user(){
         //stub
-        when(passwordEncoder.encode(anyString())).thenReturn("anypassword");
+        when(passwordEncoder.encode(anyString())).thenReturn("anyPassword");
         when(userRepository.save(any())).thenReturn(user);
-        UserDTO actualDTO = userService.save(userDTO);
+        UserDTO actualUserDTO =  userService.save(userDTO);
         //verify
         verify(keycloakService).userCreate(any());
 
-        assertThat(actualDTO).usingRecursiveComparison().isEqualTo(userDTO);
-
+        assertThat(actualUserDTO).usingRecursiveComparison().isEqualTo(userDTO);
     }
-
 }
